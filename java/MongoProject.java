@@ -154,7 +154,8 @@ public class MongoProject extends JFrame {
       //    desired collection
       
          client = MongoClients.create();
-      //   client = MongoClients.create("mongodb://localhost:27017"); 
+         // client = MongoClients.create("mongodb://localhost:27017");
+         client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
          
          output.append("Connection to server completed\n");
       
@@ -170,7 +171,7 @@ public class MongoProject extends JFrame {
           
       
       //access the database
-         sampleDB = client.getDatabase("samplesocial");        
+         sampleDB = client.getDatabase("MongoProject");        
          output.append("Connection to database completed\n");
       //Get a List of collection in the database
          collList = sampleDB.listCollectionNames().iterator();
