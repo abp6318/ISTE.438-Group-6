@@ -156,7 +156,7 @@ public class MongoProject extends JFrame {
          client = MongoClients.create();
          // client = MongoClients.create("mongodb://localhost:27017");
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
-         
+         //client = MongoClients.create("mongodb+srv://abp6318:group6password@cluster0.bgnbf.mongodb.net/MongoProject?retryWrites=true&w=majority");
          output.append("Connection to server completed\n");
       
       //Get a List of databases on the server connection
@@ -220,7 +220,7 @@ public class MongoProject extends JFrame {
       
       //Normal Find regex                 
          String searchText = input.getText();
-         String regexPattern = "^" + searchText + "\\b.*";
+         String regexPattern = "\\b" + searchText + "\\b";
       //System.out.println("Regex: " + regexPattern);
          cursor = collection.find(regex("text", regexPattern, "i")).iterator();
       
@@ -230,7 +230,7 @@ public class MongoProject extends JFrame {
          while(cursor.hasNext()) {
             Document d = cursor.next();
             //output.append(d.toJson() + "\n");
-            output.append(d.getInteger("id") + " " +d.getString("fromUser") + " " + d.getString("text") + "\n");
+            output.append(d.getString("name") + " " + d.getString("created") + "\n");
             cnt = cnt+1;
          }  
       
