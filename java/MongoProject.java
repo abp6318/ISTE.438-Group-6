@@ -37,9 +37,14 @@ import java.util.List;
 
 public class MongoProject extends JFrame {
 
-   // Tex Fields/Areas 
-   JTextField input;
+   // Text Fields/Areas 
+   JTextField inputText;
+   JTextField inputLoc;
    JTextArea message;
+   
+   // JLabels
+   JLabel label1;
+   JLabel label2;
    
    // Menu items
    JMenuBar mb;
@@ -89,10 +94,17 @@ public class MongoProject extends JFrame {
       cont.setLayout(new BorderLayout() );
    	
       // Buttons
-      JButton search = new JButton("Search");
-      JButton clear = new JButton("Clear");
+      JButton search1 = new JButton("Search");
+      JButton clear1 = new JButton("Clear");
+      
+      JButton search2 = new JButton("Search");
+      JButton clear2 = new JButton("Clear");
    	
-      input = new JTextField(20);
+      inputText = new JTextField(20);
+      inputLoc = new JTextField(20);
+      
+      label1 = new JLabel("Search by Text: ");
+      label2 = new JLabel("Search by Location: ");
    	
       JScrollPane cenOutput = new JScrollPane();
       
@@ -106,9 +118,17 @@ public class MongoProject extends JFrame {
       
       northPanel.setLayout(new FlowLayout());
       centerPanel.setLayout(new GridLayout(5,7));
-      northPanel.add(input);
-      northPanel.add(search);
-      northPanel.add(clear);
+      // Search and clear by text
+      northPanel.add(label1);
+      northPanel.add(inputText);
+      northPanel.add(search1);
+      northPanel.add(clear1);
+      
+      // Search and clear by location
+      northPanel.add(label2);
+      northPanel.add(inputLoc);
+      northPanel.add(search2);
+      northPanel.add(clear2);
       
       //centerPanel.add(cenFrame);
    	
@@ -116,10 +136,12 @@ public class MongoProject extends JFrame {
    	cont.add(buttonScrollPane, BorderLayout.CENTER);		
       cont.add(spOutput, BorderLayout.SOUTH);
    	
+      // Need functionality for location search*****
       conn.addActionListener(new ConnectMongo());
       disconn.addActionListener(new ExitMongo());
-      search.addActionListener(new GetMongo());
-      clear.addActionListener(new ClearMongo());
+      search1.addActionListener(new GetMongo());
+      clear1.addActionListener(new ClearMongo());
+      clear2.addActionListener(new ClearMongo());
    	
       setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       
@@ -237,7 +259,7 @@ public class MongoProject extends JFrame {
       // cursor = collection.find(eq("id", searchText)).iterator();
       
       //Normal Find regex                 
-         String searchText = input.getText();
+         String searchText = inputText.getText();
          String regexPattern = "\\b" + searchText + "\\b";
       //System.out.println("Regex: " + regexPattern);
          cursor = collection.find(regex("text", regexPattern, "i")).iterator();
@@ -248,7 +270,7 @@ public class MongoProject extends JFrame {
          while(cursor.hasNext()) {
             Document d = cursor.next();
             //output.append(d.toJson() + "\n");
-            message.append(d.getString("name") + " " + d.getString("created") + "\n");
+            // message.append(d.getString("name") + " " + d.getString("tweet_created") + "\n");
             cnt = cnt+1;
             JButton button = new JButton(d.getString("name"));
             button.addActionListener(new ActionListener() { 
@@ -258,7 +280,7 @@ public class MongoProject extends JFrame {
                                                       d.getString("text"), 
                                                       d.getString("name"), 
                                                       d.getString("tweet_location"),
-                                                      d.getString("created"));
+                                                      d.getString("tweet_created"));
                  } 
                });
             
@@ -279,7 +301,10 @@ public class MongoProject extends JFrame {
       public void actionPerformed (ActionEvent event) {
       //in this section open the connection. Should be able to see if it is not null
       // to see if ti is already open
-         message.setText("");
+         //message.setText("");
+         centerPanel.removeAll();
+         centerPanel.revalidate();
+
       
       }//actionPerformed
    

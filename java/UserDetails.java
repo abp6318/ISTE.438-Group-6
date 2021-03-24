@@ -21,6 +21,12 @@ import com.mongodb.WriteConcern;
 import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
 
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 
@@ -37,6 +43,13 @@ import java.util.List;
 
 
 public class UserDetails extends JFrame {
+
+   MongoDatabase sampleDB = null;
+   MongoClient client = null;
+   MongoCollection<Document> collection = null;
+   MongoCursor<Document> cursor = null;
+   MongoCursor<String> dbList = null;
+   MongoCursor<String> collList =null;   
    
    // Public variables
    public String image;
@@ -45,11 +58,18 @@ public class UserDetails extends JFrame {
    public String location;
    public String date;
    
+   // JPanels for layout
+   JPanel top;
+   JPanel middle;
+   JPanel bottom;
+ 
+   
    // Frame for the user details
    JFrame userFrame;
 
    public UserDetails(String image, String text, String userName, String location, String date) {
-   
+      
+      
       this.image = image;
       this.text = text;
       this.userName = userName;
@@ -64,6 +84,95 @@ public class UserDetails extends JFrame {
       setVisible(true);
       
       setTitle(userName);
+      
+      Container gui = getContentPane();
+      gui.setLayout(new BorderLayout());
+      
+      top = new JPanel();
+      middle = new JPanel();
+      bottom = new JPanel();
+      
+      // Add panels to gui
+      gui.add(top, BorderLayout.NORTH);
+   	gui.add(middle, BorderLayout.CENTER);		
+      gui.add(bottom, BorderLayout.SOUTH);
+      
+      // J variables
+      JLabel title = new JLabel("Detail View");
+      JLabel dateLabel = new JLabel("Date: ");
+      JLabel imageLabel = new JLabel("Image: ");
+      JLabel tweetLabel = new JLabel("Tweet: ");
+      JLabel locLabel = new JLabel("Location: ");
+      JButton comment = new JButton("Make a Comment");
+      
+      // Details to go on panel
+      JTextField dateTime = new JTextField(date);
+      dateTime.setEditable(false);
+      
+       if (location.equals("")) {
+         location = "No Location Available";
+      }
+      
+      JTextField loc = new JTextField(location);
+      loc.setEditable(false);
+      
+      JTextArea tweet = new JTextArea(text);
+      tweet.setEditable(false);
+     
+// BufferedImage myPicture = ImageIO.read(new File("path-to-file"));
+// JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+// add(picLabel);
+     //  Image newImage = null;
+//       
+//       if (image.equals("")) {
+//         try {
+//             URL url = new URL(image);
+//             newImage = ImageIO.read(url);
+//         } catch (IOException e) {
+//         	e.printStackTrace();
+//         }
+//         
+//        }
+      
+      // JFrame imageFrame = new JFrame(); 
+//       imageFrame.setSize(300, 300);
+//       JLabel imageLabel = new JLabel(new ImageIcon(newImage));
+//       imageFrame.add(imageLabel);
+//       imageFrame.setVisible(true); 
+
+        Image img = null;/* w  ww .  ja  v  a 2 s.c o m*/
+        
+        
+        try {
+            // URL url = new URL("https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/dog_cool_summer_slideshow/1800x1200_dog_cool_summer_other.jpg");
+            URL url = new URL(image);
+
+            img = ImageIO.read(url);
+            JLabel lblimage = new JLabel(new ImageIcon(img));
+            middle.add(imageLabel);
+            middle.add(lblimage);
+        } 
+        catch (IOException e) {
+        }
+        
+        //JFrame frame = new JFrame();
+
+                // frame.getContentPane().add(lblimage, BorderLayout.CENTER);
+//         frame.setSize(300, 400);
+//         frame.setVisible(true);
+        
+      top.add(title);
+      middle.add(dateLabel);
+      middle.add(dateTime);
+      
+      middle.add(locLabel);
+      middle.add(loc);
+      
+      middle.add(tweetLabel);
+      middle.add(tweet);
+      bottom.add(comment);
+      
+
 
    
    } // End of Constructor
@@ -74,5 +183,6 @@ public class UserDetails extends JFrame {
       return image + text + userName + location + date;
    
    } // End of toString method
+   
 
 } // End of UserDetails Class
