@@ -39,12 +39,17 @@ public class MongoProject extends JFrame {
 
    // Tex Fields/Areas 
    JTextField input;
-   JTextArea output;
+   JTextArea message;
    
    // Menu items
    JMenuBar mb;
    JMenu menu;
    JMenuItem conn, disconn;
+   
+   //JFrame cenFrame = new JFrame();
+   
+   // Center Panel
+   JPanel centerPanel = new JPanel();
 	
    MongoDatabase sampleDB = null;
    MongoClient client = null;
@@ -61,6 +66,9 @@ public class MongoProject extends JFrame {
       
       JFrame frame = new JFrame("Mongo Project: Search Tweets");
       
+      
+     
+      
       JMenuBar mb = new JMenuBar();
       menu = new JMenu("Menu");
       conn = new JMenuItem("Connect");
@@ -71,7 +79,7 @@ public class MongoProject extends JFrame {
       mb.add(menu);
       
       setJMenuBar(mb);
-      setSize(600,500);
+      setSize(1000,700);
       setLocation(500, 200);
       setLayout(null);
       setVisible(true);
@@ -85,18 +93,27 @@ public class MongoProject extends JFrame {
    	
       input = new JTextField(20);
    	
-      output = new JTextArea(10, 30);
-      JScrollPane spOutput = new JScrollPane(output);
+      JScrollPane cenOutput = new JScrollPane();
+      
+      // The scroll bar for the button area
+      JScrollPane buttonScrollPane = new JScrollPane(centerPanel);
+      
+      message = new JTextArea(10, 20);
+      JScrollPane spOutput = new JScrollPane(message);
    	
       JPanel northPanel = new JPanel();
+      
       northPanel.setLayout(new FlowLayout());
+      centerPanel.setLayout(new GridLayout(5,7));
       northPanel.add(input);
       northPanel.add(search);
       northPanel.add(clear);
+      
+      //centerPanel.add(cenFrame);
    	
       cont.add(northPanel, BorderLayout.NORTH);
-   			
-      cont.add(spOutput, BorderLayout.CENTER);
+   	cont.add(buttonScrollPane, BorderLayout.CENTER);		
+      cont.add(spOutput, BorderLayout.SOUTH);
    	
       conn.addActionListener(new ConnectMongo());
       disconn.addActionListener(new ExitMongo());
@@ -157,36 +174,36 @@ public class MongoProject extends JFrame {
          // client = MongoClients.create("mongodb://localhost:27017");
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
          //client = MongoClients.create("mongodb+srv://abp6318:group6password@cluster0.bgnbf.mongodb.net/MongoProject?retryWrites=true&w=majority");
-         output.append("Connection to server completed\n");
+         message.append("Connection to server completed\n");
       
       //Get a List of databases on the server connection
          dbList = client.listDatabaseNames().iterator();
-         output.append("LIST OF DATABASES\n");
+         message.append("LIST OF DATABASES\n");
       
          while (dbList.hasNext()) {
-            output.append(dbList.next());
+            message.append(dbList.next());
          //output.append(cursor.next().toJson());
-            output.append("\n");
+            message.append("\n");
          }
           
       
       //access the database
          sampleDB = client.getDatabase("MongoProject");        
-         output.append("Connection to database completed\n");
+         message.append("Connection to database completed\n");
       //Get a List of collection in the database
          collList = sampleDB.listCollectionNames().iterator();
-         output.append("LIST OF COLLECTIONS\n");
+         message.append("LIST OF COLLECTIONS\n");
       
          while (collList.hasNext()) {
-            output.append(collList.next());
-            output.append("\n");
+            message.append(collList.next());
+            message.append("\n");
          }
       		
       //get the collection
       
          collection = sampleDB.getCollection("Tweets");
          
-         output.append("Collection obtained\n");
+         message.append("Collection obtained\n");
       		
       }//actionPerformed
    } // class connectmango
@@ -194,8 +211,8 @@ public class MongoProject extends JFrame {
    class ExitMongo implements ActionListener {
       public void actionPerformed( ActionEvent event )
       {
-            output.append("\n");
-            output.append("...Not Connected...\n");
+            message.append("\n");
+            message.append("...Not Connected...\n");
             client.close();
             //System.exit(0);
 
@@ -230,22 +247,33 @@ public class MongoProject extends JFrame {
          while(cursor.hasNext()) {
             Document d = cursor.next();
             //output.append(d.toJson() + "\n");
-            output.append(d.getString("name") + " " + d.getString("created") + "\n");
+            message.append(d.getString("name") + " " + d.getString("created") + "\n");
             cnt = cnt+1;
+            JButton button = new JButton(d.getString("name"));
+            button.addActionListener(new ActionListener() { 
+                 public void actionPerformed(ActionEvent e) { 
+                   System.out.println(d.getString("name"));
+                 } 
+               } );
+            
+            //button.add(message);
+            // int count = 0;
+            
+            centerPanel.add(button, BorderLayout.CENTER);
+              
          }  
-      
-         output.append("The count is " + cnt + "\n");      
-         
-      
-         	
+         centerPanel.revalidate();
+         message.append("The count is " + cnt + "\n");      
+                  	
       }//actionPerformed
    }//class GetMongo
+  
 	
    class ClearMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
       //in this section open the connection. Should be able to see if it is not null
       // to see if ti is already open
-         output.setText("");
+         message.setText("");
       
       }//actionPerformed
    
