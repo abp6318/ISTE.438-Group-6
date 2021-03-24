@@ -62,7 +62,8 @@ public class MongoProject extends JFrame {
    public MongoProject() {
       setSize(600, 200);
       setLocation(400, 500);
-      setTitle("Access MongoDB");
+      // Title of GUI
+      setTitle("Find a Tweet!");
       
       JFrame frame = new JFrame("Mongo Project: Search Tweets");
       
@@ -253,8 +254,13 @@ public class MongoProject extends JFrame {
             button.addActionListener(new ActionListener() { 
                  public void actionPerformed(ActionEvent e) { 
                    System.out.println(d.getString("name"));
+                   UserDetails user = new UserDetails(d.getString("profileimage"), 
+                                                      d.getString("text"), 
+                                                      d.getString("name"), 
+                                                      d.getString("tweet_location"),
+                                                      d.getString("created"));
                  } 
-               } );
+               });
             
             //button.add(message);
             // int count = 0;
