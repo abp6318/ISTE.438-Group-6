@@ -25,6 +25,7 @@ import static com.mongodb.client.model.Sorts.descending;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
+import javax.net.ssl.HttpsURLConnection;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
@@ -155,13 +156,20 @@ public class UserDetails extends JFrame {
          // also include a default image
 
          try {
-            // URL url = new URL("https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/dog_cool_summer_slideshow/1800x1200_dog_cool_summer_other.jpg");
             URL url = new URL(image);
-            
-            img = ImageIO.read(url);
-            JLabel lblimage = new JLabel(new ImageIcon(img));
-            middle.add(imageLabel);
-            middle.add(lblimage);
+            HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
+            int responseCode = httpsURLConnection.getResponseCode();
+            if(responseCode == 404){
+               // default
+               JLabel lblimage = new JLabel("No Image Available");
+               middle.add(lblimage);
+            }else{
+               // load url through ImageIO
+               img = ImageIO.read(url);
+               JLabel lblimage = new JLabel(new ImageIcon(img));
+               middle.add(imageLabel);
+               middle.add(lblimage);
+            }
          } catch (IOException e) {} // end of try catch statement
 
       } // end of if else statement
