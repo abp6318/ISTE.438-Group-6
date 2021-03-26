@@ -134,18 +134,18 @@ public class UserDetails extends JFrame {
 
       if(!image_reference.equals("")){
          // then get the reference from GridFS
-         GridFSBucket gridFs = GridFSBuckets.create(sampleDB, "files");
+         GridFSBucket gridFs = GridFSBuckets.create(sampleDB, "files"); // sampleDB is a reference to the database
 
          try{
             FileOutputStream streamToDownloadTo = new FileOutputStream("temp.jpeg"); // where it's going
-            GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
+            GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0); // boiler
             gridFs.downloadToStream(image_reference, streamToDownloadTo, downloadOptions); // where it is coming from
             streamToDownloadTo.close();
 
-            File file = new File("temp.jpeg"); // where we kept it and now want again
+            File file = new File("temp.jpeg"); // grabbing it from local storage
             img = ImageIO.read(file);
-            JLabel lblimage = new JLabel(new ImageIcon(img)); // where we display it
-            middle.add(imageLabel);
+            JLabel lblimage = new JLabel(new ImageIcon(img)); // how we display it
+            middle.add(imageLabel); // where we display it
             middle.add(lblimage);
          }catch(IOException e){
             e.printStackTrace();
