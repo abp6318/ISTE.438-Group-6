@@ -5,8 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-// Mongo Imports	
+//Mongo Imports	
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
@@ -21,6 +20,7 @@ import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
+
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 
@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 //Java imports
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class MongoProject extends JFrame {
    
    // Center Panel
    JPanel centerPanel = new JPanel();
-
+	
    MongoDatabase sampleDB = null;
    MongoClient client = null;
    MongoCollection<Document> collection = null;
@@ -69,21 +70,22 @@ public class MongoProject extends JFrame {
       // Title of GUI
       setTitle("Find a Tweet!");
       
-      JFrame frame = new JFrame("Mongo Project: Search Tweets"); // New frame
-      // Menu Bar
-      JMenuBar mb = new JMenuBar();
+      JFrame frame = new JFrame("Mongo Project: Search Tweets");
       
-      // Menu Options
+      
+     
+      
+      JMenuBar mb = new JMenuBar();
       menu = new JMenu("Menu");
       conn = new JMenuItem("Connect");
       disconn = new JMenuItem("Disconnect");
       
-      menu.add(conn); 
+      menu.add(conn);
       menu.add(disconn);
       mb.add(menu);
       
       setJMenuBar(mb);
-      setSize(1000,700);
+      setSize(1300,700);
       setLocation(500, 200);
       setLayout(null);
       setVisible(true);
@@ -91,19 +93,19 @@ public class MongoProject extends JFrame {
       Container cont = getContentPane();
       cont.setLayout(new BorderLayout() );
    	
-      // Search and Clear Buttons for Search bar 1
+      // Buttons
       JButton search1 = new JButton("Search");
       JButton clear1 = new JButton("Clear");
-      // Search and Clear Buttons for Search bar 2
+      
       JButton search2 = new JButton("Search");
       JButton clear2 = new JButton("Clear");
-   	// Search Bars
+   	
       inputText = new JTextField(20);
       inputLoc = new JTextField(20);
-      // Placeholder
+      
       label1 = new JLabel("Search by Text: ");
       label2 = new JLabel("Search by Location: ");
-   	// Center Pannel
+   	
       JScrollPane cenOutput = new JScrollPane();
       
       // The scroll bar for the button area
@@ -111,9 +113,9 @@ public class MongoProject extends JFrame {
       
       message = new JTextArea(10, 20);
       JScrollPane spOutput = new JScrollPane(message);
-   	// North Panel
+   	
       JPanel northPanel = new JPanel();
-      // Layout for North and Center Panel
+      
       northPanel.setLayout(new FlowLayout());
       centerPanel.setLayout(new GridLayout(5,7));
       // Search and clear by text
@@ -129,20 +131,20 @@ public class MongoProject extends JFrame {
       northPanel.add(clear2);
       
       //centerPanel.add(cenFrame);
-      
+   	
       cont.add(northPanel, BorderLayout.NORTH);
-      cont.add(buttonScrollPane, BorderLayout.CENTER);		
+   	cont.add(buttonScrollPane, BorderLayout.CENTER);		
       cont.add(spOutput, BorderLayout.SOUTH);
    	
-      // Add Action Listener, Functionally for Connect, Exit, GetMongo, and two Clear buttons
+      // Need functionality for location search*****
       conn.addActionListener(new ConnectMongo());
       disconn.addActionListener(new ExitMongo());
       search1.addActionListener(new GetMongo());
       clear1.addActionListener(new ClearMongo());
       clear2.addActionListener(new ClearMongo());
-   	// Do nothing on close
+   	
       setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-      // Exit alert
+      
       exitListener = 
          new WindowAdapter() {
          
@@ -164,6 +166,8 @@ public class MongoProject extends JFrame {
       
       addWindowListener(exitListener);
    
+   
+   
       setVisible(true);
    	
    
@@ -184,24 +188,31 @@ public class MongoProject extends JFrame {
 	
    class ConnectMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
-      // Open the connection to MongoDB. 
+      //in this section open the connection to MongoDB. 
+      //You should enter the code to connect to the database here
+      //Remember to connect to MongoDB, connect to the database and connect to the 
+      //    desired collection
+      
          client = MongoClients.create();
+         // client = MongoClients.create("mongodb://localhost:27017");
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
-           message.append("Connection to server completed\n");
+         //client = MongoClients.create("mongodb+srv://abp6318:group6password@cluster0.bgnbf.mongodb.net/MongoProject?retryWrites=true&w=majority");
+         message.append("Connection to server completed\n");
       
       //Get a List of databases on the server connection
          dbList = client.listDatabaseNames().iterator();
          message.append("LIST OF DATABASES\n");
-      //Phasing
+      
          while (dbList.hasNext()) {
             message.append(dbList.next());
+         //output.append(cursor.next().toJson());
             message.append("\n");
          }
-         
-      // Access the database
+          
+      
+      //access the database
          sampleDB = client.getDatabase("MongoProject");        
          message.append("Connection to database completed\n");
-         
       //Get a List of collection in the database
          collList = sampleDB.listCollectionNames().iterator();
          message.append("LIST OF COLLECTIONS\n");
@@ -212,30 +223,44 @@ public class MongoProject extends JFrame {
          }
       		
       //get the collection
+      
          collection = sampleDB.getCollection("Tweets");
+         
          message.append("Collection obtained\n");
+      		
       }//actionPerformed
    } // class connectmango
    
-   //Exit and close client
    class ExitMongo implements ActionListener {
       public void actionPerformed( ActionEvent event )
       {
-         message.append("\n");
-         message.append("...Not Connected...\n");
-         client.close();
+            message.append("\n");
+            message.append("...Not Connected...\n");
+            client.close();
+            //System.exit(0);
+
       } // end method actionPerformed 
-   			
-   } // class exit mongo
+				
+		} // class exit mongo
 
       
-	// Get data from database	
+		
    class GetMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
+      // In this section you should retrieve the data from the collection
+      // and use a cursor to list the data in the output JTextArea
+       
+      //Normal Find text
+      //   String searchText = input.getText();
+      //   cursor = collection.find(eq("fromUser", searchText)).iterator();
+      
+      //Normal Find id numeric value
+      // int searchText = Integer.parseInt(input.getText());
+      // cursor = collection.find(eq("id", searchText)).iterator();
       
       //Normal Find regex                 
          String searchText = inputText.getText();
-         String regexPattern = "\\b" + searchText + "\\b";
+         String regexPattern = "\\b" + searchText;
       //System.out.println("Regex: " + regexPattern);
          cursor = collection.find(regex("text", regexPattern, "i")).iterator();
       
@@ -244,18 +269,21 @@ public class MongoProject extends JFrame {
       
          while(cursor.hasNext()) {
             Document d = cursor.next();
+            //output.append(d.toJson() + "\n");
+            // message.append(d.getString("name") + " " + d.getString("tweet_created") + "\n");
             cnt = cnt+1;
             JButton button = new JButton(d.getString("name"));
-            button.addActionListener(
-               new ActionListener() { 
-                  public void actionPerformed(ActionEvent e) { 
-                     System.out.println(d.getString("name"));
-                     UserDetails user = new UserDetails(d.getString("profileimage"), 
+            button.addActionListener(new ActionListener() { 
+                 public void actionPerformed(ActionEvent e) { 
+                   System.out.println(d.getString("name"));
+                   UserDetails user = new UserDetails(d.getString("profileimage"), 
                                                       d.getString("text"), 
                                                       d.getString("name"), 
                                                       d.getString("tweet_location"),
-                                                      d.getString("tweet_created"));
-                  } 
+                                                      d.getString("tweet_created"),
+                                                      d.getString("image_reference"),
+                                                      sampleDB);
+                 } 
                });
             
             //button.add(message);
@@ -270,12 +298,15 @@ public class MongoProject extends JFrame {
       }//actionPerformed
    }//class GetMongo
   
-	// Clear panel results
+	
    class ClearMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
+      //in this section open the connection. Should be able to see if it is not null
+      // to see if ti is already open
          centerPanel.removeAll();
-         centerPanel.revalidate();
-      
+         centerPanel.validate();
+         centerPanel.repaint();
+
       
       }//actionPerformed
    
