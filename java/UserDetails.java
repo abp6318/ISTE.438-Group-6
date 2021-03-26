@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
-
+// New windows for User Detials
 public class UserDetails extends JFrame {
 
    MongoDatabase sampleDB = null;
@@ -63,12 +63,10 @@ public class UserDetails extends JFrame {
    JPanel middle;
    JPanel bottom;
  
-   
    // Frame for the user details
    JFrame userFrame;
 
    public UserDetails(String image, String text, String userName, String location, String date) {
-      
       
       this.image = image;
       this.text = text;
@@ -76,18 +74,16 @@ public class UserDetails extends JFrame {
       this.location = location;
       this.date = date;
       
-      // Creating jframe
+      // Creating JFrame
       userFrame = new JFrame(userName);
       setSize(1000,700);
       setLocation(500, 200);
       setLayout(null);
       setVisible(true);
-      
       setTitle(userName);
-      
+      // New Container
       Container gui = getContentPane();
       gui.setLayout(new BorderLayout());
-      
       top = new JPanel();
       middle = new JPanel();
       bottom = new JPanel();
@@ -118,35 +114,15 @@ public class UserDetails extends JFrame {
       
       JTextArea tweet = new JTextArea(text);
       tweet.setEditable(false);
-     
-// BufferedImage myPicture = ImageIO.read(new File("path-to-file"));
-// JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-// add(picLabel);
-     //  Image newImage = null;
-//       
-//       if (image.equals("")) {
-//         try {
-//             URL url = new URL(image);
-//             newImage = ImageIO.read(url);
-//         } catch (IOException e) {
-//         	e.printStackTrace();
-//         }
-//         
-//        }
-      
-      // JFrame imageFrame = new JFrame(); 
-//       imageFrame.setSize(300, 300);
-//       JLabel imageLabel = new JLabel(new ImageIcon(newImage));
-//       imageFrame.add(imageLabel);
-//       imageFrame.setVisible(true); 
 
         Image img = null;/* w  ww .  ja  v  a 2 s.c o m*/
         
         
         try {
+            //Testing url
             // URL url = new URL("https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/dog_cool_summer_slideshow/1800x1200_dog_cool_summer_other.jpg");
             URL url = new URL(image);
-
+            // Read url and add image to the label
             img = ImageIO.read(url);
             JLabel lblimage = new JLabel(new ImageIcon(img));
             middle.add(imageLabel);
@@ -154,35 +130,21 @@ public class UserDetails extends JFrame {
         } 
         catch (IOException e) {
         }
-        
-        //JFrame frame = new JFrame();
-
-                // frame.getContentPane().add(lblimage, BorderLayout.CENTER);
-//         frame.setSize(300, 400);
-//         frame.setVisible(true);
-        
+      // Add Label
       top.add(title);
       middle.add(dateLabel);
       middle.add(dateTime);
-      
       middle.add(locLabel);
       middle.add(loc);
-      
       middle.add(tweetLabel);
       middle.add(tweet);
       bottom.add(comment);
-      
-
-
    
    } // End of Constructor
-   
+   //Return
    @Override
    public String toString() {
-   
       return image + text + userName + location + date;
    
    } // End of toString method
-   
-
 } // End of UserDetails Class
