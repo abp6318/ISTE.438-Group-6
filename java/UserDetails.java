@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 //Mongo Imports	
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoClient;
@@ -30,6 +31,15 @@ import javax.swing.ImageIcon;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 
+// GridFS
+import com.mongodb.client.gridfs.*;
+import com.mongodb.client.gridfs.model.*;
+
+// IO things
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+
 //Log message control imports
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -41,7 +51,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
-// New windows for User Detials
+
 public class UserDetails extends JFrame {
 
    MongoDatabase sampleDB = null;
@@ -57,6 +67,7 @@ public class UserDetails extends JFrame {
    public String userName;
    public String location;
    public String date;
+   public String image_reference;
    
    // JPanels for layout
    JPanel top;
@@ -66,24 +77,28 @@ public class UserDetails extends JFrame {
    // Frame for the user details
    JFrame userFrame;
 
-   public UserDetails(String image, String text, String userName, String location, String date) {
+   public UserDetails(String image, String text, String userName, String location, String date, String image_reference, MongoDatabase sampleDB) {
       
       this.image = image;
       this.text = text;
       this.userName = userName;
       this.location = location;
       this.date = date;
+      this.image_reference = image_reference;
+      this.sampleDB = sampleDB;
       
-      // Creating JFrame
+      // Creating jframe
       userFrame = new JFrame(userName);
       setSize(1000,700);
       setLocation(500, 200);
       setLayout(null);
       setVisible(true);
+      
       setTitle(userName);
-      // New Container
+      
       Container gui = getContentPane();
       gui.setLayout(new BorderLayout());
+      
       top = new JPanel();
       middle = new JPanel();
       bottom = new JPanel();
@@ -105,7 +120,7 @@ public class UserDetails extends JFrame {
       JTextField dateTime = new JTextField(date);
       dateTime.setEditable(false);
       
-       if (location.equals("")) {
+      if (location.equals("")) {
          location = "No Location Available";
       }
       
@@ -115,36 +130,61 @@ public class UserDetails extends JFrame {
       JTextArea tweet = new JTextArea(text);
       tweet.setEditable(false);
 
-        Image img = null;/* w  ww .  ja  v  a 2 s.c o m*/
-        
-        
-        try {
-            //Testing url
+      Image img = null;
+
+      if(!image_reference.equals("")){
+         // then get the reference from GridFS
+         GridFSBucket gridFs = GridFSBuckets.create(sampleDB, "files");
+
+         try{
+            FileOutputStream streamToDownloadTo = new FileOutputStream("temp.jpeg"); // where it's going
+            GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
+            gridFs.downloadToStream(image_reference, streamToDownloadTo, downloadOptions); // where it is coming from
+            streamToDownloadTo.close();
+
+            File file = new File("temp.jpeg"); // where we kept it and now want again
+            img = ImageIO.read(file);
+            JLabel lblimage = new JLabel(new ImageIcon(img)); // where we display it
+            middle.add(imageLabel);
+            middle.add(lblimage);
+         }catch(IOException e){
+            e.printStackTrace();
+         }// end of try catch block
+      } else {
+         // try catch with URL goes here
+         // also include a default image
+
+         try {
             // URL url = new URL("https://img.webmd.com/dtmcms/live/webmd/consumer_assets/site_images/article_thumbnails/other/dog_cool_summer_slideshow/1800x1200_dog_cool_summer_other.jpg");
             URL url = new URL(image);
-            // Read url and add image to the label
+            
             img = ImageIO.read(url);
             JLabel lblimage = new JLabel(new ImageIcon(img));
             middle.add(imageLabel);
             middle.add(lblimage);
-        } 
-        catch (IOException e) {
-        }
-      // Add Label
+         } catch (IOException e) {} // end of try catch statement
+
+      } // end of if else statement
+        
       top.add(title);
       middle.add(dateLabel);
       middle.add(dateTime);
+      
       middle.add(locLabel);
       middle.add(loc);
+      
       middle.add(tweetLabel);
       middle.add(tweet);
       bottom.add(comment);
-   
+      
    } // End of Constructor
-   //Return
+   
    @Override
    public String toString() {
+   
       return image + text + userName + location + date;
    
    } // End of toString method
+   
+
 } // End of UserDetails Class
