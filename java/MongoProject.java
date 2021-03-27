@@ -108,6 +108,7 @@ public class MongoProject extends JFrame {
       // Label
       label1 = new JLabel("Search by Text: ");
       label2 = new JLabel("Search by Location (longitude: -86.15, latitude: 39.76): " );
+
    	//Scroll Panell
       JScrollPane cenOutput = new JScrollPane();
       
@@ -124,6 +125,7 @@ public class MongoProject extends JFrame {
       northPanel.add(label1);
       northPanel.add(inputText);
       northPanel.add(search1);
+
       
       // Search and clear by location
       northPanel.add(label2);
