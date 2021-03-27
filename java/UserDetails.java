@@ -192,6 +192,9 @@ public class UserDetails extends JFrame {
       bottom.add(commentText);
       bottom.add(comment);
       
+      // Comment Functionality
+      comment.addActionListener(new makeComment());
+      
    } // End of Constructor
    
    @Override
@@ -203,3 +206,12 @@ public class UserDetails extends JFrame {
    
 
 } // End of UserDetails Class
+
+
+class makeComment implements ActionListener {
+      public void actionPerformed (ActionEvent event) {
+      
+   
+                  	
+      }//actionPerformed
+   }//class makeComment
