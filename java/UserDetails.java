@@ -93,8 +93,7 @@ public class UserDetails extends JFrame {
       setSize(1000,700);
       setLocation(500, 200);
       setLayout(null);
-      setVisible(true);
-      
+      setVisible(true);     
       setTitle(userName);
       
       Container gui = getContentPane();
@@ -109,7 +108,7 @@ public class UserDetails extends JFrame {
    	gui.add(middle, BorderLayout.CENTER);		
       gui.add(bottom, BorderLayout.SOUTH);
       
-      // J variables
+      // JLabel variables
       JLabel title = new JLabel("Detail View");
       JLabel dateLabel = new JLabel("Date: ");
       JLabel imageLabel = new JLabel("Image: ");
@@ -121,17 +120,18 @@ public class UserDetails extends JFrame {
       JTextField dateTime = new JTextField(date);
       dateTime.setEditable(false);
       
+      // Location Named placeholders if blank
       if (location.equals("")) {
          location = "No Location Available";
       }
       
       JTextField loc = new JTextField(location);
-      loc.setEditable(false);
+      loc.setEditable(false); // Lock location editable textbox
       
       JTextArea tweet = new JTextArea(text);
-      tweet.setEditable(false);
+      tweet.setEditable(false); // Lock tweet desc textbox
 
-      Image img = null;
+      Image img = null; // null images
 
       if(!image_reference.equals("")){
          // then get the reference from GridFS
@@ -154,7 +154,8 @@ public class UserDetails extends JFrame {
       } else {
          // try catch with URL goes here
          // also include a default image
-
+         
+// Try catch, error handling
          try {
             URL url = new URL(image);
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
@@ -173,7 +174,8 @@ public class UserDetails extends JFrame {
          } catch (IOException e) {} // end of try catch statement
 
       } // end of if else statement
-        
+      
+      // Add title, date, location, tweet, and comment
       top.add(title);
       middle.add(dateLabel);
       middle.add(dateTime);

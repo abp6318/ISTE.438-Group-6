@@ -68,22 +68,20 @@ public class MongoProject extends JFrame {
       setSize(600, 200);
       setLocation(400, 500);
       // Title of GUI
-      setTitle("Find a Tweet!");
+      setTitle("Find a Tweet!"); // Title
       
+      // Menu Bar
       JFrame frame = new JFrame("Mongo Project: Search Tweets");
-      
-      
-     
-      
       JMenuBar mb = new JMenuBar();
       menu = new JMenu("Menu");
       conn = new JMenuItem("Connect");
       disconn = new JMenuItem("Disconnect");
       
+      // Add connection, disconnection
       menu.add(conn);
       menu.add(disconn);
       mb.add(menu);
-      
+   
       setJMenuBar(mb);
       setSize(1300,700);
       setLocation(500, 200);
@@ -96,16 +94,15 @@ public class MongoProject extends JFrame {
       // Buttons
       JButton search1 = new JButton("Search");
       JButton clear1 = new JButton("Clear");
-      
       JButton search2 = new JButton("Search");
       JButton clear2 = new JButton("Clear");
-   	
+   	// New Text Field
       inputText = new JTextField(20);
       inputLoc = new JTextField(20);
-      
+      // Label
       label1 = new JLabel("Search by Text: ");
       label2 = new JLabel("Search by Location: ");
-   	
+   	//Scroll Panell
       JScrollPane cenOutput = new JScrollPane();
       
       // The scroll bar for the button area
@@ -133,7 +130,7 @@ public class MongoProject extends JFrame {
       //centerPanel.add(cenFrame);
    	
       cont.add(northPanel, BorderLayout.NORTH);
-   	cont.add(buttonScrollPane, BorderLayout.CENTER);		
+      cont.add(buttonScrollPane, BorderLayout.CENTER);		
       cont.add(spOutput, BorderLayout.SOUTH);
    	
       // Need functionality for location search*****
@@ -143,6 +140,7 @@ public class MongoProject extends JFrame {
       clear1.addActionListener(new ClearMongo());
       clear2.addActionListener(new ClearMongo());
    	
+      //Exit
       setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       
       exitListener = 
@@ -165,8 +163,6 @@ public class MongoProject extends JFrame {
          };
       
       addWindowListener(exitListener);
-   
-   
    
       setVisible(true);
    	
@@ -234,29 +230,17 @@ public class MongoProject extends JFrame {
    class ExitMongo implements ActionListener {
       public void actionPerformed( ActionEvent event )
       {
-            message.append("\n");
-            message.append("...Not Connected...\n");
-            client.close();
+         message.append("\n");
+         message.append("...Not Connected...\n");
+         client.close();
             //System.exit(0);
-
-      } // end method actionPerformed 
-				
-		} // class exit mongo
-
       
-		
+      } // end method actionPerformed 
+   			
+   } // class exit mongo
+      
    class GetMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
-      // In this section you should retrieve the data from the collection
-      // and use a cursor to list the data in the output JTextArea
-       
-      //Normal Find text
-      //   String searchText = input.getText();
-      //   cursor = collection.find(eq("fromUser", searchText)).iterator();
-      
-      //Normal Find id numeric value
-      // int searchText = Integer.parseInt(input.getText());
-      // cursor = collection.find(eq("id", searchText)).iterator();
       
       //Normal Find regex                 
          String searchText = inputText.getText();
@@ -269,27 +253,27 @@ public class MongoProject extends JFrame {
       
          while(cursor.hasNext()) {
             Document d = cursor.next();
-            //output.append(d.toJson() + "\n");
-            // message.append(d.getString("name") + " " + d.getString("tweet_created") + "\n");
             cnt = cnt+1;
             JButton button = new JButton(d.getString("name"));
-            button.addActionListener(new ActionListener() { 
-                 public void actionPerformed(ActionEvent e) { 
-                   System.out.println(d.getString("name"));
-                   UserDetails user = new UserDetails(d.getString("profileimage"), 
+            button.addActionListener(
+               new ActionListener() { 
+                  public void actionPerformed(ActionEvent e) { 
+                     System.out.println(d.getString("name"));
+                   // Get String: Profileimage, text, name, tweet loc, created date and image ref
+                     UserDetails user = new UserDetails(d.getString("profileimage"), 
                                                       d.getString("text"), 
                                                       d.getString("name"), 
                                                       d.getString("tweet_location"),
                                                       d.getString("tweet_created"),
                                                       d.getString("image_reference"),
                                                       sampleDB);
-                 } 
+                  } 
                });
             
             //button.add(message);
             // int count = 0;
-            
-            centerPanel.add(button, BorderLayout.CENTER);
+           
+            centerPanel.add(button, BorderLayout.CENTER); // Center Panel
               
          }  
          centerPanel.revalidate();
@@ -298,7 +282,7 @@ public class MongoProject extends JFrame {
       }//actionPerformed
    }//class GetMongo
   
-	
+	// Clear Options
    class ClearMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
       //in this section open the connection. Should be able to see if it is not null
@@ -306,7 +290,7 @@ public class MongoProject extends JFrame {
          centerPanel.removeAll();
          centerPanel.validate();
          centerPanel.repaint();
-
+      
       
       }//actionPerformed
    
