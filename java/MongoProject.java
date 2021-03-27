@@ -107,7 +107,7 @@ public class MongoProject extends JFrame {
       inputLoc = new JTextField(20);
       // Label
       label1 = new JLabel("Search by Text: ");
-      label2 = new JLabel("Search by Location: ");
+      label2 = new JLabel("Search by Location (longitude: -86.15, latitude: 39.76): " );
    	//Scroll Panell
       JScrollPane cenOutput = new JScrollPane();
       
@@ -124,7 +124,6 @@ public class MongoProject extends JFrame {
       northPanel.add(label1);
       northPanel.add(inputText);
       northPanel.add(search1);
-      northPanel.add(clear1);
       
       // Search and clear by location
       northPanel.add(label2);
@@ -143,7 +142,6 @@ public class MongoProject extends JFrame {
       disconn.addActionListener(new ExitMongo());
       search1.addActionListener(new GetMongo());
       search2.addActionListener(new GetLocMongo());
-      clear1.addActionListener(new ClearMongo());
       clear2.addActionListener(new ClearMongo());
    	
       //Exit
@@ -281,15 +279,15 @@ public class MongoProject extends JFrame {
       public void actionPerformed (ActionEvent event) {
       
       //Get long and lat coordinates               
-         String searchText = inputText.getText();
+         String searchText = inputLoc.getText();
          String[] coords = searchText.split(", ", 2);
          
       //Geospatial Indexing
          //Point currentLoc = new Point(new Position(-73.9667, 40.78)); //test data
          //cursor = collection.find(Filters.near("location", currentLoc, 100000.0, 10.0));
          Point currentLoc = new Point(new Position(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
-         FindIterable<Document> findIterable = collection.find( Filters.near("tweet_coord.location", currentLoc, 100000.0, 10.0)); //loc, current location, max distance, min distance
-
+         FindIterable<Document> findIterable = collection.find( Filters.near("loc", currentLoc, 100000.0, 0.0)); //loc, current location, max distance, min distance
+                                                                                             //100 km, 100000m
       //Set counter and print results (cursor)
          int cnt = 0; 
       
