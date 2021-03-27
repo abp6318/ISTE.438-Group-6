@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 //Java imports
-
+import java.util.Iterator;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.ArrayList;
@@ -109,6 +109,7 @@ public class UserDetails extends JFrame {
       
       // New Text Field
       getComment = new JTextArea(10,20);
+      getComment.setEditable(false);
       commentText = new JTextField(50); // Comment text field for "make a comment"
       
       // Add panels to gui
@@ -200,7 +201,24 @@ public class UserDetails extends JFrame {
       
       // Comment Functionality
       comment.addActionListener(new makeComment(userName, sampleDB, commentText));
-      
+      FindIterable<Document> resultCursor = sampleDB.getCollection("Tweets").find(Filters.eq("name", userName));
+      for(Document d : resultCursor) {
+                 
+         List<Document> commentsArrayList = (List<Document>)d.get("comments");
+         
+         Iterator i = commentsArrayList.iterator();
+         String allCommentsPutTogether = "";
+         while(i.hasNext()) {
+           // System.out.println(i.next());
+           allCommentsPutTogether+=i.next()+"\n";
+         }
+         
+         getComment.setText(allCommentsPutTogether);         
+         System.out.println(commentsArrayList.toString());
+         
+      } // for, doc d
+   
+
       
    } // End of Constructor
    
@@ -211,50 +229,28 @@ public class UserDetails extends JFrame {
    
    } // End of toString method
    
+   class makeComment implements ActionListener {
+      MongoDatabase db;
+      String name;
+      JTextField commentText;
+   
+      public makeComment(String name, MongoDatabase db, JTextField commentText) {
+         this.name = name;
+         this.db = db;
+         this.commentText = commentText;
+      }
+      public void actionPerformed (ActionEvent event) {
+         String comText = commentText.getText();
+         System.out.println(comText);
+         System.out.println(db);
+                        
+         db.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", name), new Document().append( "$push", new Document("comments",comText)));
+                   	
+      }//actionPerformed
+   
+   }//class makeComment
 
 } // End of UserDetails Class
 
 
-class makeComment implements ActionListener {
-   MongoDatabase db;
-   String name;
-   JTextField commentText;
 
-   public makeComment(String name, MongoDatabase db, JTextField commentText){
-      this.name = name;
-      this.db = db;
-      this.commentText = commentText;
-   }
-   public void actionPerformed (ActionEvent event) {
-      String comText = commentText.getText();
-      System.out.println(comText);
-      System.out.println(db);
-      
-   
-      //db.getCollection("Tweets").update("{name:" + name + "}","{$push:{comments:" + comText + "}}");
-      
-      db.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", name), new Document().append( "$push", new Document("comments",comText)));
-      
-      FindIterable<Document> resultCursor = db.getCollection("Tweets").find(Filters.eq("name", name));
-      for(Document d : resultCursor) {
-         //System.out.println(d.get("comments").toString());
-      
-       /*  String[] commentsArray = Arrays.copyOf(d.get("comments"), d.get("comments").length(), String[].class);
-         int commentsArrayLength = commentsArray.length;
-         for(int index=0; index<commentsArrayLength; index++){
-            System.out.println(commentsArray[index]);
-         } //for,  int index */
-         /*Object[] commentsArray = d.get("comments");
-            for(int index=0; index<commentsArray.length; index++){
-            System.out.println(commentsArray[index].toString());
-         }*/
-         
-         List commentsArrayList = d.get("comments");
-      //System.out.println(d.get("comments").getClass());
-         
-      } // for, doc d
-   
-   
-                  	
-   }//actionPerformed
-}//class makeComment
