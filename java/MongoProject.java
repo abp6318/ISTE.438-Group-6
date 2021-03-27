@@ -24,6 +24,12 @@ import static com.mongodb.client.model.Sorts.descending;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 
+ import com.mongodb.client.model.geojson.Point;
+ import com.mongodb.client.model.geojson.*;
+ import com.mongodb.client.model.Indexes;
+ import com.mongodb.client.model.Filters;
+ import com.mongodb.client.FindIterable;
+
 //Log message control imports
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -101,7 +107,8 @@ public class MongoProject extends JFrame {
       inputLoc = new JTextField(20);
       // Label
       label1 = new JLabel("Search by Text: ");
-      label2 = new JLabel("Search by Location: ");
+      label2 = new JLabel("Search by Location (longitude: -86.15, latitude: 39.76): " );
+
    	//Scroll Panell
       JScrollPane cenOutput = new JScrollPane();
       
@@ -118,7 +125,7 @@ public class MongoProject extends JFrame {
       northPanel.add(label1);
       northPanel.add(inputText);
       northPanel.add(search1);
-      northPanel.add(clear1);
+
       
       // Search and clear by location
       northPanel.add(label2);
@@ -136,7 +143,7 @@ public class MongoProject extends JFrame {
       conn.addActionListener(new ConnectMongo());
       disconn.addActionListener(new ExitMongo());
       search1.addActionListener(new GetMongo());
-      clear1.addActionListener(new ClearMongo());
+      search2.addActionListener(new GetLocMongo());
       clear2.addActionListener(new ClearMongo());
    	
       //Exit
@@ -268,7 +275,56 @@ public class MongoProject extends JFrame {
                   	
       }//actionPerformed
    }//class GetMongo
-  
+
+
+   class GetLocMongo implements ActionListener {
+      public void actionPerformed (ActionEvent event) {
+      
+      //Get long and lat coordinates               
+         String searchText = inputLoc.getText();
+         String[] coords = searchText.split(", ", 2);
+         
+      //Geospatial Indexing
+         //Point currentLoc = new Point(new Position(-73.9667, 40.78)); //test data
+         //cursor = collection.find(Filters.near("location", currentLoc, 100000.0, 10.0));
+         Point currentLoc = new Point(new Position(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
+         FindIterable<Document> findIterable = collection.find( Filters.near("loc", currentLoc, 100000.0, 0.0)); //loc, current location, max distance, min distance
+                                                                                             //100 km, 100000m
+      //Set counter and print results (cursor)
+         int cnt = 0; 
+      
+         for(Document d : findIterable) {
+            //Document d = cursor.next();
+            //Document d = findIterable.next();
+            cnt = cnt+1;
+            JButton button = new JButton(d.getString("name"));
+            button.addActionListener(
+               new ActionListener() { 
+                  public void actionPerformed(ActionEvent e) { 
+                     System.out.println(d.getString("name"));
+                   // Get String: Profileimage, text, name, tweet loc, created date and image ref
+                     UserDetails user = new UserDetails(d.getString("profileimage"), 
+                                                      d.getString("text"), 
+                                                      d.getString("name"), 
+                                                      d.getString("tweet_location"),
+                                                      d.getString("tweet_created"),
+                                                      d.getString("image_reference"),
+                                                      sampleDB);
+                  } 
+               });
+            
+            //button.add(message);
+            // int count = 0;
+           
+            centerPanel.add(button, BorderLayout.CENTER); // Center Panel
+              
+         }  
+         centerPanel.revalidate();
+         message.append("The count is " + cnt + "\n");      
+                  	
+      }//actionPerformed
+   }//class GetLocMongo
+     
 	// Clear Options
    class ClearMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
