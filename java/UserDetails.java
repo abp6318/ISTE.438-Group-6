@@ -22,6 +22,7 @@ import com.mongodb.WriteConcern;
 import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
 import com.mongodb.client.model.Updates.*;
+import com.mongodb.client.FindIterable;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -234,6 +235,24 @@ class makeComment implements ActionListener {
       
       db.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", name), new Document().append( "$push", new Document("comments",comText)));
       
+      FindIterable<Document> resultCursor = db.getCollection("Tweets").find(Filters.eq("name", name));
+      for(Document d : resultCursor) {
+         //System.out.println(d.get("comments").toString());
+      
+       /*  String[] commentsArray = Arrays.copyOf(d.get("comments"), d.get("comments").length(), String[].class);
+         int commentsArrayLength = commentsArray.length;
+         for(int index=0; index<commentsArrayLength; index++){
+            System.out.println(commentsArray[index]);
+         } //for,  int index */
+         /*Object[] commentsArray = d.get("comments");
+            for(int index=0; index<commentsArray.length; index++){
+            System.out.println(commentsArray[index].toString());
+         }*/
+         
+         List commentsArrayList = d.get("comments");
+      //System.out.println(d.get("comments").getClass());
+         
+      } // for, doc d
    
    
                   	
