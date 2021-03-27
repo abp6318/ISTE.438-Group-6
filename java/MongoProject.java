@@ -24,6 +24,12 @@ import static com.mongodb.client.model.Sorts.descending;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.Filters;
 
+ import com.mongodb.client.model.geojson.Point;
+ import com.mongodb.client.model.geojson.*;
+ import com.mongodb.client.model.Indexes;
+ import com.mongodb.client.model.Filters;
+ import com.mongodb.client.FindIterable;
+
 //Log message control imports
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -37,14 +43,24 @@ import java.util.List;
 
 public class MongoProject extends JFrame {
 
-   // Tex Fields/Areas 
-   JTextField input;
-   JTextArea output;
+   // Text Fields/Areas 
+   JTextField inputText;
+   JTextField inputLoc;
+   JTextArea message;
+   
+   // JLabels
+   JLabel label1;
+   JLabel label2;
    
    // Menu items
    JMenuBar mb;
    JMenu menu;
    JMenuItem conn, disconn;
+   
+   //JFrame cenFrame = new JFrame();
+   
+   // Center Panel
+   JPanel centerPanel = new JPanel();
 	
    MongoDatabase sampleDB = null;
    MongoClient client = null;
@@ -57,21 +73,23 @@ public class MongoProject extends JFrame {
    public MongoProject() {
       setSize(600, 200);
       setLocation(400, 500);
-      setTitle("Access MongoDB");
+      // Title of GUI
+      setTitle("Find a Tweet!"); // Title
       
+      // Menu Bar
       JFrame frame = new JFrame("Mongo Project: Search Tweets");
-      
       JMenuBar mb = new JMenuBar();
       menu = new JMenu("Menu");
       conn = new JMenuItem("Connect");
       disconn = new JMenuItem("Disconnect");
       
+      // Add connection, disconnection
       menu.add(conn);
       menu.add(disconn);
       mb.add(menu);
-      
+   
       setJMenuBar(mb);
-      setSize(600,500);
+      setSize(1300,700);
       setLocation(500, 200);
       setLayout(null);
       setVisible(true);
@@ -80,29 +98,55 @@ public class MongoProject extends JFrame {
       cont.setLayout(new BorderLayout() );
    	
       // Buttons
-      JButton search = new JButton("Search");
-      JButton clear = new JButton("Clear");
-   	
-      input = new JTextField(20);
-   	
-      output = new JTextArea(10, 30);
-      JScrollPane spOutput = new JScrollPane(output);
-   	
+      JButton search1 = new JButton("Search");
+      JButton clear1 = new JButton("Clear");
+      JButton search2 = new JButton("Search");
+      JButton clear2 = new JButton("Clear");
+   	// New Text Field
+      inputText = new JTextField(20);
+      inputLoc = new JTextField(20);
+      // Label
+      label1 = new JLabel("Search by Text: ");
+      label2 = new JLabel("Search by Location: ");
+   	//Scroll Panell
+      JScrollPane cenOutput = new JScrollPane();
+      
+      // The scroll bar for the button area
+      JScrollPane buttonScrollPane = new JScrollPane(centerPanel);
+      //Scroll for message area
+      message = new JTextArea(10, 20);
+      JScrollPane spOutput = new JScrollPane(message);
+      
       JPanel northPanel = new JPanel();
       northPanel.setLayout(new FlowLayout());
-      northPanel.add(input);
-      northPanel.add(search);
-      northPanel.add(clear);
+      centerPanel.setLayout(new GridLayout(5,7));
+      // Search and clear by text
+      northPanel.add(label1);
+      northPanel.add(inputText);
+      northPanel.add(search1);
+      northPanel.add(clear1);
+      
+      // Search and clear by location
+      northPanel.add(label2);
+      northPanel.add(inputLoc);
+      northPanel.add(search2);
+      northPanel.add(clear2);
+      
+      //centerPanel.add(cenFrame);
    	
       cont.add(northPanel, BorderLayout.NORTH);
-   			
-      cont.add(spOutput, BorderLayout.CENTER);
+      cont.add(buttonScrollPane, BorderLayout.CENTER);		
+      cont.add(spOutput, BorderLayout.SOUTH);
    	
+      // Need functionality for location search*****
       conn.addActionListener(new ConnectMongo());
       disconn.addActionListener(new ExitMongo());
-      search.addActionListener(new GetMongo());
-      clear.addActionListener(new ClearMongo());
+      search1.addActionListener(new GetMongo());
+      search2.addActionListener(new GetLocMongo());
+      clear1.addActionListener(new ClearMongo());
+      clear2.addActionListener(new ClearMongo());
    	
+      //Exit
       setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
       
       exitListener = 
@@ -126,21 +170,12 @@ public class MongoProject extends JFrame {
       
       addWindowListener(exitListener);
    
-   
-   
       setVisible(true);
    	
    
    } //AccessMongo
 	
    public static void main (String [] args) {
-   	
-   // The following statements are used to eliminate MongoDB Logging
-   //   information suche as INFO messages that the user should not see.
-   // It requires the import of Logger and Level classes.
-      //Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
-      //mongoLogger.setLevel(Level.INFO); 
-      
       
       MongoProject runIt = new MongoProject();
    
@@ -148,45 +183,40 @@ public class MongoProject extends JFrame {
 	
    class ConnectMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
-      //in this section open the connection to MongoDB. 
-      //You should enter the code to connect to the database here
-      //Remember to connect to MongoDB, connect to the database and connect to the 
-      //    desired collection
       
          client = MongoClients.create();
-         // client = MongoClients.create("mongodb://localhost:27017");
+         // Url source to mongodb
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
-         //client = MongoClients.create("mongodb+srv://abp6318:group6password@cluster0.bgnbf.mongodb.net/MongoProject?retryWrites=true&w=majority");
-         output.append("Connection to server completed\n");
+         message.append("Connection to server completed\n");   
       
       //Get a List of databases on the server connection
          dbList = client.listDatabaseNames().iterator();
-         output.append("LIST OF DATABASES\n");
+         message.append("LIST OF DATABASES\n");
       
          while (dbList.hasNext()) {
-            output.append(dbList.next());
+            message.append(dbList.next());
          //output.append(cursor.next().toJson());
-            output.append("\n");
+            message.append("\n");
          }
           
       
       //access the database
          sampleDB = client.getDatabase("MongoProject");        
-         output.append("Connection to database completed\n");
+         message.append("Connection to database completed\n");
       //Get a List of collection in the database
          collList = sampleDB.listCollectionNames().iterator();
-         output.append("LIST OF COLLECTIONS\n");
+         message.append("LIST OF COLLECTIONS\n");
       
          while (collList.hasNext()) {
-            output.append(collList.next());
-            output.append("\n");
+            message.append(collList.next());
+            message.append("\n");
          }
       		
       //get the collection
       
          collection = sampleDB.getCollection("Tweets");
          
-         output.append("Collection obtained\n");
+         message.append("Collection obtained\n");
       		
       }//actionPerformed
    } // class connectmango
@@ -194,33 +224,21 @@ public class MongoProject extends JFrame {
    class ExitMongo implements ActionListener {
       public void actionPerformed( ActionEvent event )
       {
-            output.append("\n");
-            output.append("...Not Connected...\n");
-            client.close();
+         message.append("\n");
+         message.append("...Not Connected...\n");
+         client.close();
             //System.exit(0);
-
-      } // end method actionPerformed 
-				
-		} // class exit mongo
-
       
-		
+      } // end method actionPerformed 
+   			
+   } // class exit mongo
+      
    class GetMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
-      // In this section you should retrieve the data from the collection
-      // and use a cursor to list the data in the output JTextArea
-       
-      //Normal Find text
-      //   String searchText = input.getText();
-      //   cursor = collection.find(eq("fromUser", searchText)).iterator();
-      
-      //Normal Find id numeric value
-      // int searchText = Integer.parseInt(input.getText());
-      // cursor = collection.find(eq("id", searchText)).iterator();
       
       //Normal Find regex                 
-         String searchText = input.getText();
-         String regexPattern = "\\b" + searchText + "\\b";
+         String searchText = inputText.getText();
+         String regexPattern = "\\b" + searchText;
       //System.out.println("Regex: " + regexPattern);
          cursor = collection.find(regex("text", regexPattern, "i")).iterator();
       
@@ -229,23 +247,93 @@ public class MongoProject extends JFrame {
       
          while(cursor.hasNext()) {
             Document d = cursor.next();
-            //output.append(d.toJson() + "\n");
-            output.append(d.getString("name") + " " + d.getString("created") + "\n");
             cnt = cnt+1;
+            JButton button = new JButton(d.getString("name"));
+            button.addActionListener(
+               new ActionListener() { 
+                  public void actionPerformed(ActionEvent e) { 
+                     System.out.println(d.getString("name"));
+                   // Get String: Profileimage, text, name, tweet loc, created date and image ref
+                     UserDetails user = new UserDetails(d.getString("profileimage"), 
+                                                      d.getString("text"), 
+                                                      d.getString("name"), 
+                                                      d.getString("tweet_location"),
+                                                      d.getString("tweet_created"),
+                                                      d.getString("image_reference"),
+                                                      sampleDB);
+                  } 
+               });
+            
+            //button.add(message);
+            // int count = 0;
+           
+            centerPanel.add(button, BorderLayout.CENTER); // Center Panel
+              
          }  
-      
-         output.append("The count is " + cnt + "\n");      
-         
-      
-         	
+         centerPanel.revalidate();
+         message.append("The count is " + cnt + "\n");      
+                  	
       }//actionPerformed
    }//class GetMongo
-	
+
+
+   class GetLocMongo implements ActionListener {
+      public void actionPerformed (ActionEvent event) {
+      
+      //Get long and lat coordinates               
+         String searchText = inputText.getText();
+         String[] coords = searchText.split(", ", 2);
+         
+      //Geospatial Indexing
+         //Point currentLoc = new Point(new Position(-73.9667, 40.78)); //test data
+         //cursor = collection.find(Filters.near("location", currentLoc, 100000.0, 10.0));
+         Point currentLoc = new Point(new Position(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
+         FindIterable<Document> findIterable = collection.find( Filters.near("tweet_coord.location", currentLoc, 100000.0, 10.0)); //loc, current location, max distance, min distance
+
+      //Set counter and print results (cursor)
+         int cnt = 0; 
+      
+         for(Document d : findIterable) {
+            //Document d = cursor.next();
+            //Document d = findIterable.next();
+            cnt = cnt+1;
+            JButton button = new JButton(d.getString("name"));
+            button.addActionListener(
+               new ActionListener() { 
+                  public void actionPerformed(ActionEvent e) { 
+                     System.out.println(d.getString("name"));
+                   // Get String: Profileimage, text, name, tweet loc, created date and image ref
+                     UserDetails user = new UserDetails(d.getString("profileimage"), 
+                                                      d.getString("text"), 
+                                                      d.getString("name"), 
+                                                      d.getString("tweet_location"),
+                                                      d.getString("tweet_created"),
+                                                      d.getString("image_reference"),
+                                                      sampleDB);
+                  } 
+               });
+            
+            //button.add(message);
+            // int count = 0;
+           
+            centerPanel.add(button, BorderLayout.CENTER); // Center Panel
+              
+         }  
+         centerPanel.revalidate();
+         message.append("The count is " + cnt + "\n");      
+                  	
+      }//actionPerformed
+   }//class GetLocMongo
+     
+	// Clear Options
    class ClearMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
       //in this section open the connection. Should be able to see if it is not null
       // to see if ti is already open
-         output.setText("");
+         centerPanel.removeAll();
+         centerPanel.validate();
+         centerPanel.repaint();
+      
       
       }//actionPerformed
    
