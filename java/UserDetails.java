@@ -77,6 +77,7 @@ public class UserDetails extends JFrame {
  
    // Frame for the user details
    JFrame userFrame;
+   JTextField commentText;
 
    public UserDetails(String image, String text, String userName, String location, String date, String image_reference, MongoDatabase sampleDB) {
       
@@ -102,6 +103,9 @@ public class UserDetails extends JFrame {
       top = new JPanel();
       middle = new JPanel();
       bottom = new JPanel();
+      
+      // New Text Field
+      commentText = new JTextField(50); // Comment text field for "make a comment"
       
       // Add panels to gui
       gui.add(top, BorderLayout.NORTH);
@@ -185,6 +189,7 @@ public class UserDetails extends JFrame {
       
       middle.add(tweetLabel);
       middle.add(tweet);
+      bottom.add(commentText);
       bottom.add(comment);
       
    } // End of Constructor
