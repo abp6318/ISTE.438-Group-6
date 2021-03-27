@@ -21,6 +21,7 @@ import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
+import com.mongodb.client.model.Updates.*;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -77,7 +78,8 @@ public class UserDetails extends JFrame {
  
    // Frame for the user details
    JFrame userFrame;
-   JTextField commentText;
+   JTextArea getComment;
+   public JTextField commentText;
 
    public UserDetails(String image, String text, String userName, String location, String date, String image_reference, MongoDatabase sampleDB) {
       
@@ -105,11 +107,12 @@ public class UserDetails extends JFrame {
       bottom = new JPanel();
       
       // New Text Field
+      getComment = new JTextArea(10,20);
       commentText = new JTextField(50); // Comment text field for "make a comment"
       
       // Add panels to gui
       gui.add(top, BorderLayout.NORTH);
-   	gui.add(middle, BorderLayout.CENTER);		
+      gui.add(middle, BorderLayout.CENTER);		
       gui.add(bottom, BorderLayout.SOUTH);
       
       // JLabel variables
@@ -134,19 +137,19 @@ public class UserDetails extends JFrame {
       
       JTextArea tweet = new JTextArea(text);
       tweet.setEditable(false); // Lock tweet desc textbox
-
+   
       Image img = null; // null images
-
+   
       if(!image_reference.equals("")){
          // then get the reference from GridFS
          GridFSBucket gridFs = GridFSBuckets.create(sampleDB, "files"); // sampleDB is a reference to the database
-
+      
          try{
             FileOutputStream streamToDownloadTo = new FileOutputStream("temp.jpeg"); // where it's going
             GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0); // boiler
             gridFs.downloadToStream(image_reference, streamToDownloadTo, downloadOptions); // where it is coming from
             streamToDownloadTo.close();
-
+         
             File file = new File("temp.jpeg"); // grabbing it from local storage
             img = ImageIO.read(file);
             JLabel lblimage = new JLabel(new ImageIcon(img)); // how we display it
@@ -159,7 +162,7 @@ public class UserDetails extends JFrame {
          // try catch with URL goes here
          // also include a default image
          
-// Try catch, error handling
+      // Try catch, error handling
          try {
             URL url = new URL(image);
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
@@ -176,7 +179,7 @@ public class UserDetails extends JFrame {
                middle.add(lblimage);
             }
          } catch (IOException e) {} // end of try catch statement
-
+      
       } // end of if else statement
       
       // Add title, date, location, tweet, and comment
@@ -186,14 +189,17 @@ public class UserDetails extends JFrame {
       
       middle.add(locLabel);
       middle.add(loc);
-      
       middle.add(tweetLabel);
       middle.add(tweet);
+      bottom.add(getComment);
+   
       bottom.add(commentText);
       bottom.add(comment);
+      //bottom.add(getComment);
       
       // Comment Functionality
-      comment.addActionListener(new makeComment());
+      comment.addActionListener(new makeComment(userName, sampleDB, commentText));
+      
       
    } // End of Constructor
    
@@ -209,9 +215,27 @@ public class UserDetails extends JFrame {
 
 
 class makeComment implements ActionListener {
-      public void actionPerformed (ActionEvent event) {
+   MongoDatabase db;
+   String name;
+   JTextField commentText;
+
+   public makeComment(String name, MongoDatabase db, JTextField commentText){
+      this.name = name;
+      this.db = db;
+      this.commentText = commentText;
+   }
+   public void actionPerformed (ActionEvent event) {
+      String comText = commentText.getText();
+      System.out.println(comText);
+      System.out.println(db);
       
    
+      //db.getCollection("Tweets").update("{name:" + name + "}","{$push:{comments:" + comText + "}}");
+      
+      db.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", name), new Document().append( "$push", new Document("comments",comText)));
+      
+   
+   
                   	
-      }//actionPerformed
-   }//class makeComment
+   }//actionPerformed
+}//class makeComment
