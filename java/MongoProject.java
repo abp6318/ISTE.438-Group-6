@@ -107,12 +107,11 @@ public class MongoProject extends JFrame {
       
       // The scroll bar for the button area
       JScrollPane buttonScrollPane = new JScrollPane(centerPanel);
-      
+      //Scroll for message area
       message = new JTextArea(10, 20);
       JScrollPane spOutput = new JScrollPane(message);
-   	
-      JPanel northPanel = new JPanel();
       
+      JPanel northPanel = new JPanel();
       northPanel.setLayout(new FlowLayout());
       centerPanel.setLayout(new GridLayout(5,7));
       // Search and clear by text
@@ -170,13 +169,6 @@ public class MongoProject extends JFrame {
    } //AccessMongo
 	
    public static void main (String [] args) {
-   	
-   // The following statements are used to eliminate MongoDB Logging
-   //   information suche as INFO messages that the user should not see.
-   // It requires the import of Logger and Level classes.
-      //Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
-      //mongoLogger.setLevel(Level.INFO); 
-      
       
       MongoProject runIt = new MongoProject();
    
@@ -184,16 +176,11 @@ public class MongoProject extends JFrame {
 	
    class ConnectMongo implements ActionListener {
       public void actionPerformed (ActionEvent event) {
-      //in this section open the connection to MongoDB. 
-      //You should enter the code to connect to the database here
-      //Remember to connect to MongoDB, connect to the database and connect to the 
-      //    desired collection
       
          client = MongoClients.create();
-         // client = MongoClients.create("mongodb://localhost:27017");
+         // Url source to mongodb
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
-         //client = MongoClients.create("mongodb+srv://abp6318:group6password@cluster0.bgnbf.mongodb.net/MongoProject?retryWrites=true&w=majority");
-         message.append("Connection to server completed\n");
+         message.append("Connection to server completed\n");   
       
       //Get a List of databases on the server connection
          dbList = client.listDatabaseNames().iterator();
