@@ -200,7 +200,8 @@ public class UserDetails extends JFrame {
       //bottom.add(getComment);
       
       // Comment Functionality
-      comment.addActionListener(new makeComment(userName, sampleDB, commentText));
+      // comment.addActionListener(new makeComment(userName, sampleDB, commentText));
+      comment.addActionListener(new makeComment());
       FindIterable<Document> resultCursor = sampleDB.getCollection("Tweets").find(Filters.eq("name", userName));
       for(Document d : resultCursor) {
                  
@@ -230,22 +231,38 @@ public class UserDetails extends JFrame {
    } // End of toString method
    
    class makeComment implements ActionListener {
-      MongoDatabase db;
-      String name;
-      JTextField commentText;
+      // MongoDatabase db;
+      // String name;
+      // JTextField commentText;
    
-      public makeComment(String name, MongoDatabase db, JTextField commentText) {
-         this.name = name;
-         this.db = db;
-         this.commentText = commentText;
-      }
+      // public makeComment(String name, MongoDatabase db, JTextField commentText) {
+      //    this.name = name;
+      //    this.db = db;
+      //    this.commentText = commentText;
+      // }
       public void actionPerformed (ActionEvent event) {
-         String comText = commentText.getText();
-         System.out.println(comText);
-         System.out.println(db);
+         // String comText = commentText.getText();
+         // System.out.println(comText);
+         // System.out.println(db);
                         
-         db.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", name), new Document().append( "$push", new Document("comments",comText)));
-                   	
+         sampleDB.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", userName), new Document().append( "$push", new Document("comments",commentText.getText())));
+         commentText.setText("");
+         FindIterable<Document> resultCursor = sampleDB.getCollection("Tweets").find(Filters.eq("name", userName));
+         for(Document d : resultCursor) {
+                  
+            List<Document> commentsArrayList = (List<Document>)d.get("comments");
+            
+            Iterator i = commentsArrayList.iterator();
+            String allCommentsPutTogether = "";
+            while(i.hasNext()) {
+            // System.out.println(i.next());
+            allCommentsPutTogether+=i.next()+"\n";
+            }
+            
+            getComment.setText(allCommentsPutTogether);         
+            System.out.println(commentsArrayList.toString());
+            
+         } // for, doc d
       }//actionPerformed
    
    }//class makeComment
