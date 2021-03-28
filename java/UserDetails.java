@@ -1,3 +1,10 @@
+/**
+   Group 6: Aaron Putterman (abp6318@rit.edu), Rachael Simmonds (rms1252@rit.edu), Tariq Afoke (tba8537@rit.edu)
+   March 28, 2021
+   ISTE.438.01
+   Edward Holden
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -54,7 +61,10 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+   This is a secondary class used only when the user interacts with a Tweet button
+   in MongoProject.java
+ */
 public class UserDetails extends JFrame {
 
    MongoDatabase sampleDB = null;
@@ -82,6 +92,15 @@ public class UserDetails extends JFrame {
    JTextArea getComment;
    public JTextField commentText;
 
+   /**
+      Constructor for a UserDetail object. This is a new page for a Tweet document.
+      @param String image              A url to the profile picture of the user
+      @param String text               The text content of the Tweet
+      @param String location           The text form of the user's Tweet location
+      @param String date               The date the Tweet was made
+      @param String image_reference    A reference to the GridFS name for the image (given that it is in GridFS)
+      @param MongoDatabase sampleDB    A reference to the MongoDB connection
+    */
    public UserDetails(String image, String text, String userName, String location, String date, String image_reference, MongoDatabase sampleDB) {
       
       this.image = image;
@@ -203,7 +222,6 @@ public class UserDetails extends JFrame {
       //bottom.add(getComment);
       
       // Comment Functionality
-      // comment.addActionListener(new makeComment(userName, sampleDB, commentText));
       comment.addActionListener(new makeComment());
       FindIterable<Document> resultCursor = sampleDB.getCollection("Tweets").find(Filters.eq("name", userName));
       for(Document d : resultCursor) {
@@ -226,6 +244,10 @@ public class UserDetails extends JFrame {
       
    } // End of Constructor
    
+   /**
+      Converts a UserDetail object into a printable String
+      @return String      String form of UserDetail object
+    */
    @Override
    public String toString() {
    
@@ -233,20 +255,12 @@ public class UserDetails extends JFrame {
    
    } // End of toString method
    
+   /**
+      Gets the user's input text and adds the text as a comment to the document. The page
+      is then refreshed and the comment is displayed.
+    */
    class makeComment implements ActionListener {
-      // MongoDatabase db;
-      // String name;
-      // JTextField commentText;
-   
-      // public makeComment(String name, MongoDatabase db, JTextField commentText) {
-      //    this.name = name;
-      //    this.db = db;
-      //    this.commentText = commentText;
-      // }
       public void actionPerformed (ActionEvent event) {
-         // String comText = commentText.getText();
-         // System.out.println(comText);
-         // System.out.println(db);
                         
          sampleDB.getCollection("Tweets").findOneAndUpdate(Filters.eq("name", userName), new Document().append( "$push", new Document("comments",commentText.getText())));
          commentText.setText("");
@@ -258,8 +272,7 @@ public class UserDetails extends JFrame {
             Iterator i = commentsArrayList.iterator();
             String allCommentsPutTogether = "";
             while(i.hasNext()) {
-            // System.out.println(i.next());
-            allCommentsPutTogether+=i.next()+"\n";
+               allCommentsPutTogether+=i.next()+"\n";
             }
             
             getComment.setText(allCommentsPutTogether);         
@@ -267,10 +280,5 @@ public class UserDetails extends JFrame {
             
          } // for, doc d
       }//actionPerformed
-   
    }//class makeComment
-
 } // End of UserDetails Class
-
-
-
