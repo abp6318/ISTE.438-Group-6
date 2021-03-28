@@ -107,7 +107,7 @@ public class MongoProject extends JFrame {
       inputLoc = new JTextField(20);
       // Label
       label1 = new JLabel("Search by Text: ");
-      label2 = new JLabel("Search by Location (longitude: -86.15, latitude: 39.76): " );
+      label2 = new JLabel("Search by Location (longitude, latitude): " );
 
    	//Scroll Panell
       JScrollPane cenOutput = new JScrollPane();
@@ -120,7 +120,7 @@ public class MongoProject extends JFrame {
       
       JPanel northPanel = new JPanel();
       northPanel.setLayout(new FlowLayout());
-      centerPanel.setLayout(new GridLayout(5,7));
+      centerPanel.setLayout(new GridLayout(0,3));
       // Search and clear by text
       northPanel.add(label1);
       northPanel.add(inputText);
@@ -189,34 +189,12 @@ public class MongoProject extends JFrame {
          client = MongoClients.create("mongodb://abp6318:group6password@cluster0-shard-00-00.bgnbf.mongodb.net:27017,cluster0-shard-00-01.bgnbf.mongodb.net:27017,cluster0-shard-00-02.bgnbf.mongodb.net:27017/MongoProject?ssl=true&replicaSet=atlas-zvs1gy-shard-0&authSource=admin&retryWrites=true&w=majority");
          message.append("Connection to server completed\n");   
       
-      //Get a List of databases on the server connection
-         dbList = client.listDatabaseNames().iterator();
-         message.append("LIST OF DATABASES\n");
-      
-         while (dbList.hasNext()) {
-            message.append(dbList.next());
-         //output.append(cursor.next().toJson());
-            message.append("\n");
-         }
-          
-      
       //access the database
          sampleDB = client.getDatabase("MongoProject");        
          message.append("Connection to database completed\n");
-      //Get a List of collection in the database
-         collList = sampleDB.listCollectionNames().iterator();
-         message.append("LIST OF COLLECTIONS\n");
-      
-         while (collList.hasNext()) {
-            message.append(collList.next());
-            message.append("\n");
-         }
-      		
-      //get the collection
-      
+    
          collection = sampleDB.getCollection("Tweets");
-         
-         message.append("Collection obtained\n");
+       
       		
       }//actionPerformed
    } // class connectmango
@@ -238,7 +216,9 @@ public class MongoProject extends JFrame {
       
       //Normal Find regex                 
          String searchText = inputText.getText();
-         String regexPattern = "\\b" + searchText;
+         
+         if(!searchText.equals("")) {
+            String regexPattern = "\\b" + searchText;
       //System.out.println("Regex: " + regexPattern);
          cursor = collection.find(regex("text", regexPattern, "i")).iterator();
       
@@ -270,9 +250,12 @@ public class MongoProject extends JFrame {
             centerPanel.add(button, BorderLayout.CENTER); // Center Panel
               
          }  
+         
          centerPanel.revalidate();
          message.append("The count is " + cnt + "\n");      
-                  	
+
+         }
+                           	
       }//actionPerformed
    }//class GetMongo
 
@@ -282,7 +265,9 @@ public class MongoProject extends JFrame {
       
       //Get long and lat coordinates               
          String searchText = inputLoc.getText();
-         String[] coords = searchText.split(", ", 2);
+         
+         if(!searchText.equals("")) {
+           String[] coords = searchText.split(", ", 2);
          
       //Geospatial Indexing
          //Point currentLoc = new Point(new Position(-73.9667, 40.78)); //test data
@@ -321,6 +306,9 @@ public class MongoProject extends JFrame {
          }  
          centerPanel.revalidate();
          message.append("The count is " + cnt + "\n");      
+         }
+         
+         
                   	
       }//actionPerformed
    }//class GetLocMongo

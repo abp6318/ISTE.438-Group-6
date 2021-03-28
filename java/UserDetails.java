@@ -101,14 +101,14 @@ public class UserDetails extends JFrame {
       setTitle(userName);
       
       Container gui = getContentPane();
-      gui.setLayout(new BorderLayout());
+      gui.setLayout(new BoxLayout(gui, BoxLayout.PAGE_AXIS));
       
       top = new JPanel();
       middle = new JPanel();
       bottom = new JPanel();
       
       // New Text Field
-      getComment = new JTextArea(10,20);
+      getComment = new JTextArea(50,50);
       getComment.setEditable(false);
       commentText = new JTextField(50); // Comment text field for "make a comment"
       
@@ -123,7 +123,9 @@ public class UserDetails extends JFrame {
       JLabel imageLabel = new JLabel("Image: ");
       JLabel tweetLabel = new JLabel("Tweet: ");
       JLabel locLabel = new JLabel("Location: ");
-      JButton comment = new JButton("Make a Comment");
+      JButton comment = new JButton("Submit");
+      
+      JLabel commLabel = new JLabel("Make a Comment: ");
       
       // Details to go on panel
       JTextField dateTime = new JTextField(date);
@@ -193,8 +195,9 @@ public class UserDetails extends JFrame {
       middle.add(loc);
       middle.add(tweetLabel);
       middle.add(tweet);
-      bottom.add(getComment);
-   
+      middle.add(getComment);
+      
+      bottom.add(commLabel);
       bottom.add(commentText);
       bottom.add(comment);
       //bottom.add(getComment);
